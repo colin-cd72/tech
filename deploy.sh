@@ -4,7 +4,7 @@
 
 set -e
 
-APP_DIR="/home/cloudpanel/htdocs/tech.4tmrw.net"
+APP_DIR="/home/tech/htdocs/tech.4tmrw.net"
 LOG_FILE="$APP_DIR/logs/deploy.log"
 
 echo "$(date): Starting deploy..." >> $LOG_FILE
