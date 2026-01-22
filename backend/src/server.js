@@ -16,6 +16,7 @@ const positionRoutes = require('./routes/positions');
 const assignmentRoutes = require('./routes/assignments');
 const reportRoutes = require('./routes/reports');
 const settingsRoutes = require('./routes/settings');
+const webhookRoutes = require('./routes/webhook');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -40,6 +41,9 @@ app.use('/api/', limiter);
 
 // Logging
 app.use(morgan('combined'));
+
+// Webhook routes (before body parsing for raw body access)
+app.use('/api/webhook', webhookRoutes);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
