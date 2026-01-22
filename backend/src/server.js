@@ -17,11 +17,13 @@ const assignmentRoutes = require('./routes/assignments');
 const reportRoutes = require('./routes/reports');
 const settingsRoutes = require('./routes/settings');
 const webhookRoutes = require('./routes/webhook');
+const powerAutomateRoutes = require('./routes/powerautomate');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3200;
 
 // Security middleware
@@ -44,6 +46,9 @@ app.use(morgan('combined'));
 
 // Webhook routes (before body parsing for raw body access)
 app.use('/api/webhook', webhookRoutes);
+
+// Power Automate webhook (needs JSON body parsing)
+app.use('/api/powerautomate', express.json(), powerAutomateRoutes);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));

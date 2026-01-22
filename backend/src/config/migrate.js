@@ -226,11 +226,32 @@ DROP TRIGGER IF EXISTS sharepoint_settings_updated_at ON sharepoint_settings;
 CREATE TRIGGER sharepoint_settings_updated_at BEFORE UPDATE ON sharepoint_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 `;
 
+// Add new columns for Power Automate integration
+const migrations = `
+-- Add external_id column for Power Automate events
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'external_id') THEN
+    ALTER TABLE events ADD COLUMN external_id VARCHAR(255);
+    CREATE INDEX IF NOT EXISTS idx_events_external_id ON events(external_id);
+  END IF;
+END $$;
+
+-- Add source column to track where events came from
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'source') THEN
+    ALTER TABLE events ADD COLUMN source VARCHAR(50) DEFAULT 'manual';
+  END IF;
+END $$;
+`;
+
 async function migrate() {
   console.log('Running database migrations...');
 
   try {
     await pool.query(schema);
+    await pool.query(migrations);
     console.log('Migrations completed successfully!');
   } catch (error) {
     console.error('Migration failed:', error);
